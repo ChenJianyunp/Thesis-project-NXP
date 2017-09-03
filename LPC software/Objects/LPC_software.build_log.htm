@@ -1,0 +1,140 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Yuexin Chen, NXP, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.23
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         SARMCM3.DLL V5.23
+Dialog DLL:      DARMCM1.DLL V1.17.0.0
+Target DLL:      UL2CM3.DLL V1.159.7.0
+Dialog DLL:      TARMCM1.DLL V1.12.0.0
+ 
+<h2>Project:</h2>
+C:\Users\nxf27796\Desktop\LPC software\LPC_software.uvprojx
+Project File Date:  06/29/2017
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'Target 1'
+assembling startup_LPC82x.s...
+compiling system_LPC82x.c...
+compiling LPC_software.c...
+LPC_software.c(161): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(24);
+LPC_software.c(162): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(25);
+LPC_software.c(163): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(26);
+LPC_software.c(164): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(27);
+LPC_software.c(165): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(28);
+LPC_software.c(166): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(29);
+LPC_software.c(167): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(30);
+LPC_software.c(168): warning:  #188-D: enumerated type mixed with another type
+  	
+VIC_DisableIRQ(31);
+LPC_software.c(211): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(24);
+LPC_software.c(215): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(25);
+LPC_software.c(219): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(26);
+LPC_software.c(223): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(27);
+LPC_software.c(227): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(28);
+LPC_software.c(231): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(29);
+LPC_software.c(235): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(30);
+LPC_software.c(239): warning:  #188-D: enumerated type mixed with another type
+  				
+VIC_EnableIRQ(31);
+LPC_software.c(285): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(24);
+LPC_software.c(294): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(25);
+LPC_software.c(303): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(26);
+LPC_software.c(313): warning:  #188-D: enumerated type mixed with another type
+    	
+VIC_DisableIRQ(27);
+LPC_software.c(322): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(28);
+LPC_software.c(331): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(29);
+LPC_software.c(341): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(30);
+LPC_software.c(350): warning:  #188-D: enumerated type mixed with another type
+  			
+VIC_DisableIRQ(31);
+LPC_software.c: 24 warnings, 0 errors
+linking...
+Program Size: Code=2140 RO-data=224 RW-data=20 ZI-data=692  
+".\Objects\LPC_software.axf" - 0 Error(s), 24 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.0.1.pack
+                ARM::CMSIS:CORE:5.0.1
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.0.1
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.LPC800_DFP.1.2.0.pack
+                Keil::Device:Startup:1.0.0
+                NXP LPC800 Series Device Support
+   * Component: Startup Version: 1.0.0
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_Target_1
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include
+  C:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.0.1
+
+   * Component: Keil::Device:Startup:1.0.0
+      Include file:  Device\Include\LPC82x.h
+      Source file:   Device\Source\ARM\startup_LPC82x.s
+      Source file:   Device\Source\system_LPC82x.c
+Build Time Elapsed:  00:00:01
+</pre>
+</body>
+</html>

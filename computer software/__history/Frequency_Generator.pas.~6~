@@ -1,0 +1,550 @@
+{
+This driver incl. the flexray generator
+}
+
+unit Frequency_Generator;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,DSI2C, Math, Vcl.ComCtrls;
+
+type
+  TSignalgenerator = class(TForm)
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    FLEXRAY: TTabSheet;
+    Button6: TButton;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    ComboBox1: TComboBox;
+    Edit1: TEdit;
+    ComboBox2: TComboBox;
+    GroupBox2: TGroupBox;
+    TXENtext: TEdit;
+    Button1: TButton;
+    TrackBar1: TTrackBar;
+    Label2: TLabel;
+    GroupBox3: TGroupBox;
+    TXDtext: TEdit;
+    delaytext: TEdit;
+    cycletext: TEdit;
+    Button2: TButton;
+    Button3: TButton;
+    Button5: TButton;
+    Button4: TButton;
+    Button7: TButton;
+    Label3: TLabel;
+    Button8: TButton;
+    procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+Procedure SetFrequency_on(Hertz:real;channel:integer);
+Procedure SetFrequency_on_VIO(Hertz:real;channel:integer;VIO:real);
+procedure SetFrequency_off;
+Procedure SetFlexray_on(dc:integer;Ftxen:real;FTXD:real;delay:real;cyclenr:integer);
+
+var
+Signalgenerator: TSignalgenerator;
+IICopen:boolean;
+PowerIO_data: array[0..11] of byte;
+const
+PowerIOadress_0_15=$40;
+PowerIOadress_16_23=$42;
+MUXIICadress=$E0;
+PowerIOmuxadres=$08;
+
+implementation
+
+{$R *.dfm}
+
+Procedure MUXtoSignalGen;
+begin
+//Configuration of backplane IIC multiplexer
+set_start;
+Send_Byte_Then_Chk_ACK(MUXIICadress);
+Send_Byte_Then_Chk_ACK(PowerIOmuxadres);
+Set_stop;
+End;
+
+Procedure sendSPI40(I2Caddress:integer;data:int64);
+var
+data1,data2,data3,data4,data5:byte;
+begin
+data1:=data shr 32;
+data2:=data shr 24;
+data2:=data2 and $00FF;
+data3:=data shr 16;
+data3:= data3 and $0000FF;
+data4:=data shr 8;
+data4:= data4 and $000000FF;
+data5:= data and $00000000FF;
+
+MUXtoSignalGen;
+
+Set_start;
+Send_Byte_Then_Chk_ACK(I2Caddress);
+Send_Byte_Then_Chk_ACK(data1);
+Send_Byte_Then_Chk_ACK(data2);
+Send_Byte_Then_Chk_ACK(data3);
+Send_Byte_Then_Chk_ACK(data4);
+Send_Byte_Then_Chk_ACK(data5);
+Set_stop;
+end;
+
+Procedure sendSPI32(data:longword);
+var
+data1,data2,data3,data4:byte;
+begin
+data1:=data shr 24;
+data2:=data shr 16;
+data2:=data2 and $00FF;
+data3:=data shr 8;
+data3:= data3 and $0000FF;
+data4:= data and $000000FF;
+
+MUXtoSignalGen;
+
+Set_start;
+Send_Byte_Then_Chk_ACK($08);
+Send_Byte_Then_Chk_ACK(data1);
+Send_Byte_Then_Chk_ACK(data2);
+Send_Byte_Then_Chk_ACK(data3);
+Send_Byte_Then_Chk_ACK(data4);
+Set_stop;
+end;
+
+procedure DAC_SPIfreq;
+begin
+MUXtoSignalGen;
+Set_start;
+Send_Byte_Then_Chk_ACK($50);
+Send_Byte_Then_Chk_ACK($F0);
+Send_Byte_Then_Chk_ACK($02);  //115 kHz
+Set_stop;
+end;
+
+Procedure I2CtoSPI_write (data1:byte; data2:byte);
+Begin
+        MUXtoSignalGen;
+        Set_start;
+        Send_Byte_Then_Chk_ACK($50);
+        Send_Byte_Then_Chk_ACK($01);
+        Send_Byte_Then_Chk_ACK(data1);
+        Send_Byte_Then_Chk_ACK(data2);
+        Set_stop;
+End;
+
+procedure SendVolt(port: integer; volt: single);
+var
+I2Cmux : integer;
+I2CtoSPIbridge : integer;
+Final_DAC : integer;
+Divide : single;
+Rounded : integer;
+MSB_data : integer;
+LSB_data :integer;
+channel : integer;
+HI_channel: byte;
+begin
+Divide:= volt/0.00122100122100;  //calculate the 12 bit
+Rounded := Round(Divide); //Rounded result
+
+        Case port of
+        0 : Begin Final_DAC := Rounded ;        channel:=$FE; End;
+        1 : Begin Final_DAC := Rounded + 4096 ; channel:=$FD; End;
+        2 : Begin Final_DAC := Rounded + 8192 ; channel:=$FB; End;
+        3 : Begin Final_DAC := Rounded + 12288; channel:=$F7; End;
+        4 : Begin Final_DAC := Rounded + 16384; channel:=$EF; End;
+        5 : Begin Final_DAC := Rounded + 20480; channel:=$DF; End;
+        6 : Begin Final_DAC := Rounded + 24576; channel:=$BF; End;
+        7 : Begin Final_DAC := Rounded + 28672; channel:=$7F; End;
+        End;
+
+        DAC_SPIfreq;
+        MSB_data := Final_DAC shr 8;
+        LSB_data := Final_DAC and $00FF;
+        //update channel
+        HI_channel :=HI_channel and channel;
+        //DAC_PowerDown (HI_channel);
+        sleep(5);
+        I2CtoSPI_write (MSB_data,LSB_data);
+end;
+
+Procedure powerIO_busexpander(adres:byte;data1:byte;data2:byte);
+Begin
+        Set_start;
+        Send_Byte_Then_Chk_ACK(adres);
+        Send_Byte_Then_Chk_ACK($02);                                    //Comand byte output port 0, auto increment
+        Send_Byte_Then_Chk_ACK(data1);
+        Send_Byte_Then_Chk_ACK(data2);
+        Set_stop;
+end;
+
+Procedure output_on(outnum:integer);
+var
+busexpander:integer;
+busoutput:integer;
+busexpander_adres:integer;
+busoutput_byte1:byte;
+busoutput_byte2:byte;
+begin
+        busoutput_byte1:=$00;
+        busoutput_byte2:=$00;
+        busexpander:=trunc(outnum/16);                                   //calculate  busexpander
+        busoutput:=outnum-(busexpander*16);                                   //Calculate  output
+        Case busexpander  of
+                0: busexpander_adres:=PowerIOadress_0_15;
+                1: busexpander_adres:=PowerIOadress_16_23;
+                End;
+        Case busoutput of
+                0: busoutput_byte1:=$01;
+                1: busoutput_byte1:=$02;
+                2: busoutput_byte1:=$04;
+                3: busoutput_byte1:=$08;
+                4: busoutput_byte1:=$10;
+                5: busoutput_byte1:=$20;
+                6: busoutput_byte1:=$40;
+                7: busoutput_byte1:=$80;
+                8: busoutput_byte2:=$01;
+                9: busoutput_byte2:=$02;
+                10: busoutput_byte2:=$04;
+                11: busoutput_byte2:=$08;
+                12: busoutput_byte2:=$10;
+                13: busoutput_byte2:=$20;
+                14: busoutput_byte2:=$40;
+                15: busoutput_byte2:=$80;
+                End;
+//update output
+        MUXtoSignalGen;
+        PowerIO_data[(busexpander*2)]:=PowerIO_data[(busexpander*2)] or busoutput_byte1;
+        PowerIO_data[(busexpander*2)+1]:=PowerIO_data[(busexpander*2)+1] or busoutput_byte2;
+        powerIO_busexpander(busexpander_adres,PowerIO_data[(busexpander*2)],PowerIO_data[(busexpander*2)+1]);
+end;
+
+Procedure output_off(outnum:integer);
+var
+busexpander:integer;
+busoutput:integer;
+busexpander_adres:integer;
+busoutput_byte1:byte;
+busoutput_byte2:byte;
+begin
+        busoutput_byte1:=$FF;
+        busoutput_byte2:=$FF;
+        busexpander:=trunc(outnum/16);                                    //calculate  busexpander
+        busoutput:=outnum-(busexpander*16);                               //Calculate  output
+        Case busexpander  of
+        0: busexpander_adres:=PowerIOadress_0_15;
+        1: busexpander_adres:=PowerIOadress_16_23;
+        End;
+        Case busoutput of
+        0: busoutput_byte1:=$FE;
+        1: busoutput_byte1:=$FD;
+        2: busoutput_byte1:=$FB;
+        3: busoutput_byte1:=$F7;
+        4: busoutput_byte1:=$EF;
+        5: busoutput_byte1:=$DF;
+        6: busoutput_byte1:=$BF;
+        7: busoutput_byte1:=$7F;
+        8: busoutput_byte2:=$FE;
+        9: busoutput_byte2:=$FD;
+        10: busoutput_byte2:=$FB;
+        11: busoutput_byte2:=$F7;
+        12: busoutput_byte2:=$EF;
+        13: busoutput_byte2:=$DF;
+        14: busoutput_byte2:=$BF;
+        15: busoutput_byte2:=$7F;
+        End;
+//update output
+        MUXtoSignalGen;
+        PowerIO_data[(busexpander*2)]:=PowerIO_data[(busexpander*2)] and busoutput_byte1;
+        PowerIO_data[(busexpander*2)+1]:=PowerIO_data[(busexpander*2)+1] and busoutput_byte2;
+        powerIO_busexpander(busexpander_adres,PowerIO_data[(busexpander*2)],PowerIO_data[(busexpander*2)+1]);
+end;
+
+Procedure busexpander_output(adres:byte);
+Begin
+        Set_start;
+        Send_Byte_Then_Chk_ACK(adres);
+        Send_Byte_Then_Chk_ACK($06);                                    //Comand byte output port 0, auto increment
+        Send_Byte_Then_Chk_ACK($00);
+        Send_Byte_Then_Chk_ACK($00);
+        Set_stop;
+End;
+
+Procedure initialize_powerIO;
+var
+X:integer;
+begin
+        MUXtoSignalGen;
+        busexpander_output(PowerIOadress_0_15);
+        busexpander_output(PowerIOadress_16_23);
+        powerIO_busexpander(PowerIOadress_0_15,$00,$00);
+        powerIO_busexpander(PowerIOadress_16_23,$00,$00);
+        For X:=0 to 11 do
+                begin
+                PowerIO_data[x]:=$00;
+                End;
+End;
+
+procedure TSignalgenerator.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+i:integer;
+begin
+for I := 0 to 23 do
+begin
+SendVolt(i-1,0.1);
+output_off(i);
+end;
+end;
+
+Procedure TSignalgenerator.FormCreate(Sender: TObject);
+var
+i:integer;
+begin
+{dsi2c.speed :=20;  //IIC speed on 28kHz
+IICopen:=Init_Controller('EVA A');
+If not IICopen then
+Begin
+showmessage('no or wrong application board');
+halt(1);
+End;  }
+initialize_powerIO;
+
+for I := 1 to 23 do
+begin
+SendVolt(i-1,0.1);
+output_off(i);
+end;
+end;
+
+procedure TSignalgenerator.TrackBar1Change(Sender: TObject);
+begin
+Label3.caption:=inttostr(trackbar1.Position)+'%';
+end;
+
+Procedure TXEN(Frequency: real);
+var
+Hertz:integer;
+divider:integer;
+dataint:int64;
+channel:integer;
+begin
+dataint:= $51;
+dataint:= (dataint  shl 32) or round(Frequency)  ;
+sendSPI40($08,dataint);
+SendVolt(0,5);
+output_on(0);
+end;
+
+Procedure TXD(Frequency: real);
+var
+divider:integer;
+dataint:int64;
+channel:integer;
+begin
+divider := round(50e6 / Frequency);
+dataint:= $52;
+dataint:= (dataint  shl 32) or divider  ;
+sendSPI40($08,dataint);
+SendVolt(1,5);
+output_on(2);
+end;
+
+Procedure timedelay(time:real);
+var
+divider:integer;
+dataint:int64;
+begin
+divider := round(time /20e-9);
+dataint:= $54;
+dataint:= (dataint  shl 32) or divider  ;
+sendSPI40($08,dataint);
+end;
+
+Procedure cycle(number:integer);
+var
+dataint:int64;
+begin
+number:=number-1;
+dataint:= $53;
+dataint:= (dataint  shl 32) or number  ;
+sendSPI40($08,dataint);
+end;
+
+Procedure dutycycle(dc:integer);
+var
+dataint:int64;
+begin
+if (dc >= 100) or (dc = 0) then dc := 50;
+dataint:= $55;
+dataint:= (dataint  shl 32) or dc  ;
+sendSPI40($08,dataint);
+end;
+
+Procedure SetFrequency_on(Hertz:real;channel:integer);
+var
+divider:integer;
+dataint:int64;
+lednr:integer;
+begin
+divider := round(50e6 / Hertz);
+dataint:= round(Power(2,channel-1));
+dataint:= (dataint  shl 32) or divider  ;
+sendSPI40($04,dataint);
+
+Case channel of
+        1: lednr:=1;
+        2: lednr:=3;
+        3: lednr:=5;
+        4: lednr:=7;
+        5: lednr:=17;
+        6: lednr:=18;
+        7: lednr:=21;
+        8: lednr:=23;
+        End;
+SendVolt(channel-1,5);
+output_on(lednr);
+end;
+
+Procedure SetFrequency_on_VIO(Hertz:real;channel:integer;VIO:real);
+var
+divider:integer;
+dataint:int64;
+lednr:integer;
+begin
+divider := round(50e6 / Hertz);
+dataint:= round(Power(2,channel-1));
+dataint:= (dataint  shl 32) or divider  ;
+sendSPI40($04,dataint);
+
+Case channel of
+        1: lednr:=1;
+        2: lednr:=3;
+        3: lednr:=5;
+        4: lednr:=7;
+        5: lednr:=17;
+        6: lednr:=18;
+        7: lednr:=21;
+        8: lednr:=23;
+        End;
+if abs(VIO)>5 then VIO:=5;
+SendVolt(channel-1,VIO);
+output_on(lednr);
+end;
+
+Procedure SetFrequency_off;
+var
+i:integer;
+begin
+for I := 0 to 23 do
+begin
+SendVolt(i-1,0.1);
+output_off(i);
+end;
+end;
+
+procedure TSignalgenerator.Button1Click(Sender: TObject);
+var
+TXEN_KHz:real;
+begin
+dutycycle(trackbar1.Position);
+TXEN(strtofloat(TXENtext.Text));
+end;
+
+procedure TSignalgenerator.Button2Click(Sender: TObject);
+var
+Freq_MHz:real;
+begin
+Freq_MHz:=strtofloat(TXDtext.Text)*1e6;
+TXD(strtofloat(TXDtext.Text));
+end;
+
+procedure TSignalgenerator.Button3Click(Sender: TObject);
+begin
+timedelay(strtofloat(delaytext.Text));
+end;
+
+procedure TSignalgenerator.Button4Click(Sender: TObject);
+begin
+Button1Click(Sender);//press "Dutycycle" and "Frequency" button on TXEN block
+Button2Click(Sender);//press "Frequency" button on TXD block
+Button3Click(Sender);//press "Time delay" button
+Button5Click(Sender);//press "Cycle" button
+
+end;
+
+procedure TSignalgenerator.Button5Click(Sender: TObject);
+begin
+cycle(strtoint(cycletext.Text));
+end;
+
+procedure TSignalgenerator.Button6Click(Sender: TObject);
+var
+Frequency:integer;
+channel:integer;
+begin
+Frequency := strtoint (edit1.Text);
+
+  if combobox1.text = 'kHz' then
+     Frequency := round(Frequency * 1e3)
+  else if combobox1.text = 'MHz' then
+     Frequency := round(Frequency * 1e6);
+
+Channel:= strtoint (combobox2.Text);
+Case channel of
+        1: channel:=7;
+        2: channel:=8;
+        3: channel:=1;
+        4: channel:=2;
+        5: channel:=5;
+        6: channel:=6;
+        7: channel:=3;
+        8: channel:=4;
+        End;
+if Frequency > 50e6 then
+    showmessage('Maximum frequency is 50 MHz')
+else
+ begin
+   SetFrequency_on(frequency,channel);
+end;
+end;
+
+procedure TSignalgenerator.Button7Click(Sender: TObject);
+begin
+SetFrequency_off;
+end;
+
+procedure TSignalgenerator.Button8Click(Sender: TObject);
+var
+i:integer;
+begin
+for I := 0 to 15 do output_on(i);
+end;
+
+Procedure SetFlexray_on(dc:integer;Ftxen:real;FTXD:real;delay:real;cyclenr:integer);
+begin
+dutycycle(dc);
+TXEN(ftxen);
+TXD(ftxd);
+timedelay(delay);
+cycle(cyclenr);
+end;
+
+end.

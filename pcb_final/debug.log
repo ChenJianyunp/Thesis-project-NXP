@@ -1,0 +1,14 @@
+[0310/164353:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/164358:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224403:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224403:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224408:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224413:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224416:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0310/224418:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0313/090842:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0313/090843:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0313/090847:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0313/090847:WARNING:dns_config_service_win.cc(665)] Failed to read DnsConfig.
+[0313/090951:ERROR:dns_config_service_win.cc(750)] DNS config watch failed.
+[0328/122949:ERROR:dns_config_service_win.cc(750)] DNS config watch failed.

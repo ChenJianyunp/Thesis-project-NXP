@@ -1,0 +1,16 @@
+Dependencies for Project 'LPC_software', Target 'Target 1': (DO NOT MODIFY !)
+F (.\LPC_software.c)(0x59120146)(--c99 -c --cpu Cortex-M0+ -D__EVAL -g -O0 --apcs=interwork --split_sections-I.\RTE\_Target_1-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include-D__UVISION_VERSION="523" -D_RTE_ -DLPC824M201JDH20-o .\objects\lpc_software.o --omf_browse .\objects\lpc_software.crf --depend .\objects\lpc_software.d)
+I (C:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include\lpc82x.h)(0x53F5E108)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm0plus.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x57F66928)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include\system_LPC82x.h)(0x53F5E108)
+F (RTE\Device\LPC824M201JDH20\startup_LPC82x.s)(0x53F5E108)(--cpu Cortex-M0+ --pd "__EVAL SETA 1" -g --apcs=interwork -I.\RTE\_Target_1-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include--pd "__UVISION_VERSION SETA 523" --pd "_RTE_ SETA 1" --pd "LPC824M201JDH20 SETA 1"--list .\listings\startup_lpc82x.lst --xref -o .\objects\startup_lpc82x.o --depend .\objects\startup_lpc82x.d)
+F (RTE\Device\LPC824M201JDH20\system_LPC82x.c)(0x53F5E108)(--c99 -c --cpu Cortex-M0+ -D__EVAL -g -O0 --apcs=interwork --split_sections-I.\RTE\_Target_1-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include-IC:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include-D__UVISION_VERSION="523" -D_RTE_ -DLPC824M201JDH20-o .\objects\system_lpc82x.o --omf_browse .\objects\system_lpc82x.crf --depend .\objects\system_lpc82x.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x57F66928)
+I (C:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include\LPC82x.h)(0x53F5E108)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\core_cm0plus.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_compiler.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.1\CMSIS\Include\cmsis_armcc.h)(0x5898ABFA)
+I (C:\Keil_v5\ARM\PACK\Keil\LPC800_DFP\1.2.0\Device\Include\system_LPC82x.h)(0x53F5E108)
